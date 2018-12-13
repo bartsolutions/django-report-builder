@@ -13,6 +13,7 @@ from .utils import duplicate
 from .models import Report
 from .mixins import DataExportMixin
 
+
 User = get_user_model()
 
 

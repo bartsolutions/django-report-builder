@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.utils.functional import cached_property
 from django.conf import settings
+from django.urls import reverse
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,6 +19,7 @@ from ..mixins import GetFieldsMixin, DataExportMixin
 from django.core import serializers
 from ..utils import duplicate
 
+# from plan.models_utils import debug
 
 def find_exact_position(fields_list, item):
     current_position = 0
@@ -97,7 +99,6 @@ class ReportNestedViewSet(ReportBuilderViewMixin, viewsets.ModelViewSet):
             new_filter.pk = None
             new_filter.report = new_report
             new_filter.save()
-
         serializer = ReportNestedSerializer(new_report)
         return JsonResponse(serializer.data)
 
@@ -290,8 +291,21 @@ class GenerateReport(ReportBuilderViewMixin, DataExportMixin, APIView):
             preview=True,)
         display_fields = report.get_good_display_fields().values_list(
             'name', flat=True)
+        content_type = report.root_model
+        display_fields = list(display_fields)+['selflink']
+        # debug("@210", objects_list)
+        return_objects_list = []
+        for object_item in objects_list:
+            self_link = ''
+            if object_item[0]:
+                self_link = reverse("admin:%s_%s_change" % (content_type.app_label,
+                                    content_type.model), args=(object_item[0],))
+            object_item = object_item[1:] # remove obj pk
+            object_item.append(self_link)
+            return_objects_list.append(object_item)
+
         response = {
-            'data': objects_list,
+            'data': return_objects_list,
             'meta': {'titles': display_fields},
         }
 

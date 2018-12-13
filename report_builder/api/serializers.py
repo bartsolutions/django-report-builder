@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from report_builder.models import Report, DisplayField, FilterField, Format
 from rest_framework import serializers
 import datetime
+# from plan.models_utils import debug
 
 User = get_user_model()
 
@@ -100,6 +101,7 @@ class ReportNestedSerializer(ReportSerializer):
         return data
 
     def update(self, instance, validated_data):
+        
         displayfields_data = validated_data.pop('displayfield_set')
         filterfields_data = validated_data.pop('filterfield_set')
 

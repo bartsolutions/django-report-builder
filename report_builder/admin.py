@@ -3,7 +3,7 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
-from report_builder.models import Report, Format
+from report_builder.models import Report, Format, DisplayField
 from django.conf import settings
 
 try:
@@ -28,6 +28,12 @@ class StarredFilter(SimpleListFilter):
         if self.value() == 'Starred':
             return queryset.filter(starred=request.user)
 
+
+
+class DisplayFieldAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'field_type')
+
+admin.site.register(DisplayField, DisplayFieldAdmin)
 
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('ajax_starred', 'edit', 'name', 'description', 'root_model', 'created', 'modified', 'user_created', 'download_xlsx', 'copy_report',)

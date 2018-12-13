@@ -19,6 +19,7 @@ from functools import reduce
 import time
 import datetime
 import re
+# from plan.models_utils import debug
 
 try:
     from django.core.urlresolvers import reverse
@@ -165,7 +166,6 @@ class Report(models.Model):
                 if field.field_type in ["Property"]:
                     property_filters += [field]
         display_fields = self.get_good_display_fields()
-
         # Need the pk for inserting properties later
         display_field_paths = ['pk']
         display_field_properties = []
@@ -212,7 +212,6 @@ class Report(models.Model):
             filter_field_type = filter_field.field_type
             if filter_field_type == "Property":
                 property_filters += [field]
-
         group = [df.path + df.field for df in display_fields if df.group]
 
         # To support group-by with multiple fields, we turn all the other
@@ -221,13 +220,15 @@ class Report(models.Model):
             for field in display_fields:
                 if (not field.group) and (not field.aggregate):
                     field.aggregate = 'Max'
+            if preview:
+                group.append("pk")
             values = queryset.values(*group)
             values = self.add_aggregates(values, display_fields)
             data_list = []
             for row in values:
                 row_data = []
                 for field in display_field_paths:
-                    if field == 'pk':
+                    if not preview and field == 'pk':
                         continue
                     try:
                         row_data.append(row[field])
@@ -238,7 +239,6 @@ class Report(models.Model):
                 data_list.append(row_data)
         else:
             values_list = list(queryset.values_list(*display_field_paths))
-
             data_list = []
             values_index = 0
             for obj in queryset:
@@ -251,7 +251,10 @@ class Report(models.Model):
                 value_row = values_list[values_index]
                 while value_row[0] == obj.pk:
                     add_row = True
-                    data_row = list(value_row[1:])  # Remove added pk
+                    if preview:
+                        data_row = list(value_row)  # no remove added pk
+                    else:
+                        data_row = list(value_row[1:])  # Remove added pk
                     # Insert in the location dictated by the order of display fields
                     for i, prop_value in enumerate(display_property_values):
                         data_row.insert(insert_property_indexes[i], prop_value)
@@ -283,7 +286,6 @@ class Report(models.Model):
             sort__gt=0
         ).order_by('-sort'):
             data_list = sort_data(data_list, display_field)
-
         if display_totals:
             display_totals_row = []
             i = 0
@@ -296,11 +298,10 @@ class Report(models.Model):
             # Add formats to display totals
             for pos, style in display_formats.items():
                 display_totals_row[pos] = formatter(display_totals_row[pos], style)
-
+            # debug("2301 data_list", display_totals_row)
             data_list += [
-                ['TOTALS'] + (len(display_fields) - 1) * ['']
-            ] + [display_totals_row]
-
+                ['', 'TOTALS'] + (len(display_fields) - 1) * [''] # this is extend pk
+            ] + [[''] + display_totals_row]
         return data_list
 
     def get_query(self):
@@ -416,10 +417,10 @@ class Report(models.Model):
     download_xlsx.allow_tags = True
 
     def copy_report(self):
-        return mark_safe('<a href="{0}"><img style="width: 26px; margin: -6px" src="{1}report_builder/img/copy.svg"/></a>'.format(
+        return '<a href="{0}"><img style="width: 26px; margin: -6px" src="{1}report_builder/img/copy.svg"/></a>'.format(
             reverse('report_builder_create_copy', args=[self.id]),
             getattr(settings, 'STATIC_URL', '/static/'),
-        ))
+        )
     copy_report.short_description = "Copy"
     copy_report.allow_tags = True
 
