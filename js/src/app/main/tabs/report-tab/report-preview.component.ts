@@ -4,7 +4,7 @@ import { IReportPreview } from '../../../models/api';
 
 @Component({
   selector: 'app-report-preview',
-  template: `<table *ngIf="previewData.meta.titles.includes('selflink'); else noSelfLink">
+  template: `<table *ngIf="previewData.meta.titles.includes('detail_url'); else noSelfLink">
 	  <thead>
 		  <tr><td *ngFor="let header of previewData.meta.titles">{{header}}</td></tr>
 	  </thead>
@@ -12,7 +12,7 @@ import { IReportPreview } from '../../../models/api';
 		  <tr *ngFor="let row of previewData.data">
 			  <td *ngFor="let cell of row; last as isLast">
 				  <div *ngIf="isLast; else otherCell">
-					  <a [href]="cell">selflink</a>
+					  <a [href]="cell">view detail</a>
 				  </div>
 				  <ng-template #otherCell>{{cell}}</ng-template>
 			  </td>
