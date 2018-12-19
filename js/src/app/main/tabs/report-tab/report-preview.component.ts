@@ -4,17 +4,25 @@ import { IReportPreview } from '../../../models/api';
 
 @Component({
   selector: 'app-report-preview',
-  template: `<table *ngIf="previewData.meta.titles.includes('detail_url'); else noSelfLink">
-	  <thead>
+  template: `<table *ngIf="previewData.meta.titles.includes('Action'); else noSelfLink" class="plan-preview">
+	  <thead class="plan-preview-table-th">
 		  <tr><td *ngFor="let header of previewData.meta.titles">{{header}}</td></tr>
 	  </thead>
-	  <tbody>
+	  <tbody class="plan-preview-table-body">
 		  <tr *ngFor="let row of previewData.data">
-			  <td *ngFor="let cell of row; last as isLast">
+			  <td *ngFor="let cell of row; index as i; last as isLast">
 				  <div *ngIf="isLast; else otherCell">
-					  <a [href]="cell">view detail</a>
+					  <a [href]="cell">View Detail</a>
 				  </div>
-				  <ng-template #otherCell>{{cell}}</ng-template>
+                  <ng-template #otherCell>
+                      <div *ngIf="previewData.meta.titles.length - i == 3||
+                                  previewData.meta.titles.length - i == 2; 
+                                  else noImageCell">
+                           <img *ngIf="cell != ''; else noImageUrl" [src]="cell" width="100px"/>
+                           <ng-template #noImageUrl></ng-template>
+                      </div>
+                      <ng-template #noImageCell>{{cell}}</ng-template>
+                  </ng-template>
 			  </td>
 		  </tr>
 	  </tbody>
