@@ -11,9 +11,10 @@ import { IReportPreview } from '../../../models/api';
 	  <tbody class="plan-preview-table-body">
 		  <tr *ngFor="let row of previewData.data">
 			  <td *ngFor="let cell of row; index as i; last as isLast">
-				  <div *ngIf="isLast; else otherCell">
-					  <a [href]="cell">View Detail</a>
-				  </div>
+				  <div *ngIf="isLast||row.length - 2 == i; else otherCell">
+                      <a *ngIf="row.length - 2 == i" [href]="cell">View Plan</a>
+                      <a *ngIf="isLast" [href]="cell">Generate Quote</a>
+                  </div>
                   <ng-template #otherCell>
                       <div *ngIf="previewData.meta.titles.length - i == 3||
                                   previewData.meta.titles.length - i == 2; 
