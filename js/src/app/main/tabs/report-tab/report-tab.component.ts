@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '../../../reducers';
 import {
@@ -22,7 +22,7 @@ import { IExportType } from '../../../models/api';
   <div class="app-report-tab">
     <div>
       <button mat-button [disabled]="!(dirty$ | async)" (click)="this.onSave()">Save</button>
-      <button mat-button (click)="this.makePreview()">Preview</button>
+      <button id="preview" mat-button (click)="this.makePreview()">Preview</button>
       <button mat-button (click)="this.exportReport('xlsx')">XLSX</button>
       <button mat-button (click)="this.exportReport('csv')">CSV</button>
       <app-last-report *ngIf="lastGeneratedReport$ | async" [report]="lastGeneratedReport$ | async"></app-last-report>
@@ -36,7 +36,7 @@ import { IExportType } from '../../../models/api';
   </div>
   `,
 })
-export class ReportTabComponent {
+export class ReportTabComponent implements AfterViewInit{
   constructor(private store: Store<State>) {}
   previewData$ = this.store.select(getPreview);
   lastSaved$ = this.store.select(getLastSaved);
@@ -44,6 +44,18 @@ export class ReportTabComponent {
   isGeneratingReport$ = this.store.select(isGeneratingReport);
   errors$ = this.store.select(getErrors);
   dirty$ = this.store.select(hasEditedSinceLastSave);
+
+
+  ngAfterViewInit() {
+    let previewElement = document.getElementById("preview");
+    console.log("@61");
+    setTimeout(() => {
+        console.log("@63");
+
+        previewElement.click();
+    }, 5);
+    console.log("@65");
+  }
 
   onSave() {
     this.store.dispatch(new EditReport());
