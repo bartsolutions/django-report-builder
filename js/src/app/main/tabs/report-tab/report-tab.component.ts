@@ -48,13 +48,9 @@ export class ReportTabComponent implements AfterViewInit{
 
   ngAfterViewInit() {
     let previewElement = document.getElementById("preview");
-    console.log("@61");
     setTimeout(() => {
-        console.log("@63");
-
         previewElement.click();
-    }, 5);
-    console.log("@65");
+    }, 0);
   }
 
   onSave() {
