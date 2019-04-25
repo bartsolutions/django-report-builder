@@ -16,8 +16,8 @@ import { IReportPreview } from '../../../models/api';
                       <a *ngIf="isLast" [href]="cell">Generate Quote</a>
                   </div>
                   <ng-template #otherCell>
-                      <div *ngIf="previewData.meta.titles.length - i == 3||
-                                  previewData.meta.titles.length - i == 2; 
+                      <div *ngIf="previewData.meta.titles.length - i == 4||
+                                  previewData.meta.titles.length - i == 5; 
                                   else noImageCell">
                            <img *ngIf="cell != ''; else noImageUrl" [src]="cell" width="100px"/>
                            <ng-template #noImageUrl></ng-template>

@@ -50,7 +50,7 @@ export class ReportTabComponent implements AfterViewInit{
     let previewElement = document.getElementById("preview");
     setTimeout(() => {
         previewElement.click();
-    }, 0);
+    }, 1000);
   }
 
   onSave() {
